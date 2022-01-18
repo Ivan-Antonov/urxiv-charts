@@ -1,0 +1,20 @@
+# Declare variables to be passed into your templates.
+name: urxiv-browse
+namespace: default
+port: 80
+
+scaling:
+  replicas: "1"
+
+image:
+  name: "ivanantonov97/urxiv_browse"
+  tag: "0.0.1"
+
+loglevel: "40"
+
+labels:
+  subsystem: frontend
+
+ingress:
+  host: urxiv.org
+  name: urxiv-browse-ingress

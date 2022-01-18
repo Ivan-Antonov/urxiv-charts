@@ -1,0 +1,39 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: "{{ .Values.name }}"
+  namespace: "{{ .Values.namespace }}"
+  labels:
+    subsystem: "{{ .Values.labels.subsystem }}"
+    container: "{{ .Values.name }}"
+    service-group: api
+    log-style: uwsgi
+    env: "{{ .Values.namespace }}"
+spec:
+  replicas: {{  int .Values.scaling.replicas }}
+  selector:
+    matchLabels:
+      subsystem: "{{ .Values.labels.subsystem }}"
+  template:
+    metadata:
+      labels:
+        subsystem: "{{ .Values.labels.subsystem }}"
+        container: "{{ .Values.name }}"
+        service-group: api
+        log-style: uwsgi
+        env: "{{ .Values.namespace }}"
+    spec:
+      serviceAccount: urxiv-browse
+      containers:
+        - name: "{{ .Values.name }}"
+          image: "{{ .Values.image.name }}:{{ .Values.image.tag }}"
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 8000
+          resources:
+            limits:
+              cpu: 300m
+              memory: 256Mi
+            requests:
+              cpu: 200m
+              memory: 256Mi
