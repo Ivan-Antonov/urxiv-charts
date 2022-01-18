@@ -1,0 +1,14 @@
+apiVersion: v1
+entries:
+  urxiv-browse-service:
+  - apiVersion: v2
+    appVersion: 0.1.1
+    created: "2022-01-18T14:10:36.796203873Z"
+    description: A Helm chart for Urxiv Browse Application
+    digest: b86e4d3260738b11c26bd69a4da23094fdd36242b5fed559bf5c8a05eaf28558
+    name: urxiv-browse-service
+    type: application
+    urls:
+    - https://github.com/Ivan-Antonov/urxiv-charts/releases/download/urxiv-browse-service-0.1.1/urxiv-browse-service-0.1.1.tgz
+    version: 0.1.1
+generated: "2022-01-18T14:10:36.796210073Z"
