@@ -9,9 +9,6 @@ metadata:
     service-group: api
     env: "{{ .Values.namespace }}"
 spec:
-  tls:  # This will use the default certificate for the ingress controller.
-  - hosts:
-    - "{{ .Values.ingress.host }}"
   rules:
   - host: "{{ .Values.ingress.host }}"
     http:
