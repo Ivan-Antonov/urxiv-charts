@@ -18,10 +18,7 @@ spec:
   - host: "{{ .Values.ingress.host }}"
     http:
       paths:
-        - pathType: ImplementationSpecific
-          path: "{{ .Values.ingress.path }}"
+        - path: "{{ .Values.ingress.path }}"
           backend:
-            service:
-              name: "{{ .Values.name }}"
-              port:
-                number: {{ .Values.port }}
+            serviceName: "{{ .Values.name }}"
+            servicePort: {{ .Values.port }}
