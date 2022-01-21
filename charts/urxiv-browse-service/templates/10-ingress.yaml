@@ -8,8 +8,6 @@ metadata:
     container: urxiv-browse-ingress
     service-group: api
     env: "{{ .Values.namespace }}"
-  annotations:
-    ingress.kubernetes.io/rewrite-target: /
 spec:
   rules:
   - host: "{{ .Values.ingress.host }}"
