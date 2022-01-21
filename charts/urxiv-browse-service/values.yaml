@@ -17,5 +17,5 @@ labels:
 
 ingress:
   host: urxiv.org
-  path: /
+  path: /*
   name: urxiv-browse-ingress
