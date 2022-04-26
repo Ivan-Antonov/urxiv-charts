@@ -1,0 +1,46 @@
+# Declare variables to be passed into your templates.
+name: urxiv-submission
+namespace: default
+
+scaling:
+  replicas: "1"
+
+env:
+  db_uri: "mysql://localhost:5432"
+  redis:
+    host: "localhost"
+    port: 7000
+    database: 0
+  vault:
+    enabled: 1
+  s3:
+    host: "urxiv.s3.amazonaws.com"
+    bucket_name: "urxiv"
+
+submission_agent:
+  port: 81
+  image:
+    name: "ivanantonov97/urxiv_submission_agent"
+    tag: "0.0.1"
+
+submission_ui:
+  path: /submission
+  port: 82
+  image:
+    name: "ivanantonov97/urxiv_submission_ui"
+    tag: "0.0.1"
+
+submission_filemanager:
+  path: /upload
+  port: 83
+  image:
+    name: "ivanantonov97/urxiv_submission_filemanager"
+    tag: "0.0.1"
+
+loglevel: "40"
+
+labels:
+  subsystem: submission
+ingress:
+  host: urxiv.org
+  name: urxiv-submission-ingress

@@ -1,0 +1,129 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: "{{ .Values.name }}"
+  namespace: "{{ .Values.namespace }}"
+  labels:
+    subsystem: "{{ .Values.labels.subsystem }}"
+    container: "{{ .Values.name }}"
+    service-group: api
+    log-style: uwsgi
+    env: "{{ .Values.namespace }}"
+spec:
+  replicas: {{  int .Values.scaling.replicas }}
+  selector:
+    matchLabels:
+      subsystem: "{{ .Values.labels.subsystem }}"
+  template:
+    metadata:
+      labels:
+        subsystem: "{{ .Values.labels.subsystem }}"
+        container: "{{ .Values.name }}"
+        service-group: api
+        log-style: uwsgi
+        env: "{{ .Values.namespace }}"
+    spec:
+      serviceAccount: urxiv-auth
+      containers:
+        - name: "{{ .Values.name }}:accounts"
+          image: "{{ .Values.accounts.image.name }}:{{ .Values.accounts.image.tag }}"
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 8081
+          env:
+            - name: BASE_SERVER
+              value: "{{ .Values.ingress.host }}"
+            - name: REDIS_CLUSTER
+              value: "1"
+            - name: CLASSIC_DATABASE_URI
+              value: "{{ .Values.env.db_uri }}"
+            - name: SQLALCHEMY_TRACK_MODIFICATIONS
+              value: False
+            - name: REDIS_HOST
+              value: "{{ .Values.env.redis.host }}"
+            - name: REDIS_PORT
+              value: {{ .Values.env.redis.port }}
+            - name: REDIS_DATABASE
+              value: "{{ .Values.env.redis.database }}"
+            - name: ACCOUNTS_SERVER_NAME
+              value: "{{ .Values.name }}-accounts"
+            - name: AUTH_SESSION_COOKIE_DOMAIN
+              value: "{{ .Values.ingress.host }}"
+            - name: PREFERRED_URL_SCHEME=https
+              value: "https"
+            - name: DEFAULT_LOGIN_REDIRECT_URL
+              value: "https://{{ .Values.ingress.host }}/user"
+            - name: DEFAULT_LOGOUT_REDIRECT_URL
+              value: "https://{{ .Values.ingress.host }}"
+            - name: VAULT_ENABLED
+              value: "{{ .Values.env.vault.enabled }}"
+
+            - name: FLASKS3_ACTIVE
+              value: 0
+            - name: FLASKS3_BUCKET_NAME
+              value: "{{ .Values.env.s3.bucket_name }}"
+            - name: FLASKS3_CDN_DOMAIN
+              value: "{{ .Values.env.s3.host }}"
+            - name: FLASKS3_USE_HTTPS
+              value: 1
+          resources:
+            limits:
+              cpu: 300m
+              memory: 256Mi
+            requests:
+              cpu: 200m
+              memory: 256Mi
+        - name: "{{ .Values.name }}:registry"
+          image: "{{ .Values.registry.image.name }}:{{ .Values.registry.image.tag }}"
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 8082
+          env:
+            - name: SERVER_NAME
+              value: "{{ .Values.name }}-registry"
+            - name: BASE_SERVER
+              value: "{{ .Values.ingress.host }}"
+            - name: DEFAULT_LOGIN_REDIRECT_URL
+              value: "https://{{ .Values.ingress.host }}/user"
+            - name: DEFAULT_LOGOUT_REDIRECT_URL
+              value: "https://{{ .Values.ingress.host }}"
+            - name: SQLALCHEMY_DATABASE_URI
+              value: "{{ .Values.env.db_uri }}"
+            - name: REDIS_HOST
+              value: "{{ .Values.env.redis.host }}"
+            - name: REDIS_PORT
+              value: {{ .Values.env.redis.port }}
+            - name: REDIS_DATABASE
+              value: "{{ .Values.env.redis.database }}"
+            - name: VAULT_ENABLED
+              value: "{{ .Values.env.vault.enabled }}"
+          resources:
+            limits:
+              cpu: 300m
+              memory: 256Mi
+            requests:
+              cpu: 200m
+              memory: 256Mi
+        - name: "{{ .Values.name }}:authenticator"
+          image: "{{ .Values.authenticator.image.name }}:{{ .Values.authenticator.image.tag }}"
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 8083
+          env:
+            - name: NAMESPACE
+              value: "{{ .Values.namespace}}"
+            - name: REDIS_HOST
+              value: "{{ .Values.env.redis.host }}"
+            - name: REDIS_PORT
+              value: {{ .Values.env.redis.port }}
+            - name: REDIS_DATABASE
+              value: "{{ .Values.env.redis.database }}"
+            - name: VAULT_ENABLED
+              value: "{{ .Values.env.vault.enabled }}"
+          resources:
+            limits:
+              cpu: 300m
+              memory: 256Mi
+            requests:
+              cpu: 200m
+              memory: 256Mi

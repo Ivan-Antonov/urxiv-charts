@@ -11,7 +11,7 @@ metadata:
   annotations:
     kubernetes.io/ingress.class: "nginx"
     nginx.ingress.kubernetes.io/rewrite-target: "/*"
-    nginx.ingress.kubernetes.io/force-ssl-redirect: "false"
+    # nginx.ingress.kubernetes.io/force-ssl-redirect: "false"
     # nginx.ingress.kubernetes.io/ssl-redirect: "true"
     # nginx.ingress.kubernetes.io/ssl-passthrough: "true"
     # nginx.ingress.kubernetes.io/server-snippet: |
@@ -24,19 +24,33 @@ spec:
     http:
       paths:
         - pathType: Exact
-          path: "{{ .Values.ingress.path }}"
+          path: "{{ .Values.submmision_ui.path }}"
           backend:
             service:
               name: "{{ .Values.name }}"
               port:
-                number: {{ .Values.port }}
+                number: {{ .Values.submission_ui.port }}
+        - pathType: Exact
+          path: "{{ .Values.submission_filemanager.path }}"
+          backend:
+            service:
+              name: "{{ .Values.name }}"
+              port:
+                number: {{ .Values.submission_filemanager.port }}
   - host: "{{ cat "www." .Values.ingress.host | replace " " "" }}"
     http:
       paths:
         - pathType: Exact
-          path: "{{ .Values.ingress.path }}"
+          path: "{{ .Values.submmision_ui.path }}"
           backend:
             service:
               name: "{{ .Values.name }}"
               port:
-                number: {{ .Values.port }}
+                number: {{ .Values.submission_ui.port }}
+        - pathType: Exact
+          path: "{{ .Values.submission_filemanager.path }}"
+          backend:
+            service:
+              name: "{{ .Values.name }}"
+              port:
+                number: {{ .Values.submission_filemanager.port }}
