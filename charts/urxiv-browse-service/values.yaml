@@ -6,6 +6,12 @@ port: 80
 scaling:
   replicas: "1"
 
+env:
+  db_uri: "mysql://localhost:5432"
+  s3:
+    host: "urxiv.s3.amazonaws.com"
+    bucket_name: "urxiv"
+
 image:
   name: "ivanantonov97/urxiv_browse"
   tag: "0.0.1"
