@@ -2,6 +2,16 @@ apiVersion: v1
 entries:
   urxiv-auth-service:
   - apiVersion: v2
+    appVersion: 0.1.2
+    created: "2022-04-26T14:27:15.401627819Z"
+    description: A Helm chart for Urxiv Auth Application
+    digest: 7a3feed6333e73b0bc75a1cd4d40fa96f1c0ed0610676c4536f43f2935ee8a7d
+    name: urxiv-auth-service
+    type: application
+    urls:
+    - https://github.com/Ivan-Antonov/urxiv-charts/releases/download/urxiv-auth-service-0.1.2/urxiv-auth-service-0.1.2.tgz
+    version: 0.1.2
+  - apiVersion: v2
     appVersion: 0.1.1
     created: "2022-04-26T13:39:53.147643545Z"
     description: A Helm chart for Urxiv Auth Application
@@ -22,6 +32,16 @@ entries:
     - https://github.com/Ivan-Antonov/urxiv-charts/releases/download/urxiv-auth-service-0.1.0/urxiv-auth-service-0.1.0.tgz
     version: 0.1.0
   urxiv-browse-service:
+  - apiVersion: v2
+    appVersion: 0.1.12
+    created: "2022-04-26T14:27:15.510235208Z"
+    description: A Helm chart for Urxiv Browse Application
+    digest: 88a71f2faa0087753cc837b7bcf9efe29f992b674557b25b86bb4489432d2047
+    name: urxiv-browse-service
+    type: application
+    urls:
+    - https://github.com/Ivan-Antonov/urxiv-charts/releases/download/urxiv-browse-service-0.1.12/urxiv-browse-service-0.1.12.tgz
+    version: 0.1.12
   - apiVersion: v2
     appVersion: 0.1.11
     created: "2022-04-26T13:39:53.274890995Z"
@@ -132,4 +152,15 @@ entries:
     urls:
     - https://github.com/Ivan-Antonov/urxiv-charts/releases/download/urxiv-browse-service-0.1.1/urxiv-browse-service-0.1.1.tgz
     version: 0.1.1
-generated: "2022-04-26T13:39:53.274941294Z"
+  urxiv-submission-service:
+  - apiVersion: v2
+    appVersion: 0.1.0
+    created: "2022-04-26T14:27:15.617083084Z"
+    description: A Helm chart for Urxiv Submission Application
+    digest: 4faac6b8fc7cf12bff3af11cb4e5cd165f8ed90d5aa40c061d8be43afd8e0864
+    name: urxiv-submission-service
+    type: application
+    urls:
+    - https://github.com/Ivan-Antonov/urxiv-charts/releases/download/urxiv-submission-service-0.1.0/urxiv-submission-service-0.1.0.tgz
+    version: 0.1.0
+generated: "2022-04-26T14:27:15.617162185Z"
