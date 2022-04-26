@@ -1,6 +1,27 @@
 apiVersion: v1
 entries:
+  urxiv-auth-service:
+  - apiVersion: v2
+    appVersion: 0.1.0
+    created: "2022-04-26T12:54:19.125827736Z"
+    description: A Helm chart for Urxiv Auth Application
+    digest: 6625dbd6f1193b7b4335df9112c455c45e114f0e9671c75fca20414531dc8212
+    name: urxiv-auth-service
+    type: application
+    urls:
+    - https://github.com/Ivan-Antonov/urxiv-charts/releases/download/urxiv-auth-service-0.1.0/urxiv-auth-service-0.1.0.tgz
+    version: 0.1.0
   urxiv-browse-service:
+  - apiVersion: v2
+    appVersion: 0.1.10
+    created: "2022-04-26T12:54:19.238928163Z"
+    description: A Helm chart for Urxiv Browse Application
+    digest: 8f640ffc76cc6a9e0b978918abbf50987ca65744e5c7d0627282d628aee30395
+    name: urxiv-browse-service
+    type: application
+    urls:
+    - https://github.com/Ivan-Antonov/urxiv-charts/releases/download/urxiv-browse-service-0.1.10/urxiv-browse-service-0.1.10.tgz
+    version: 0.1.10
   - apiVersion: v2
     appVersion: 0.1.9
     created: "2022-01-21T20:55:48.290458168Z"
@@ -91,4 +112,4 @@ entries:
     urls:
     - https://github.com/Ivan-Antonov/urxiv-charts/releases/download/urxiv-browse-service-0.1.1/urxiv-browse-service-0.1.1.tgz
     version: 0.1.1
-generated: "2022-01-21T20:55:48.290524369Z"
+generated: "2022-04-26T12:54:19.239099764Z"
