@@ -24,7 +24,7 @@ submission_agent:
     tag: "0.0.1"
 
 submission_ui:
-  path: /submission
+  path: /submit
   port: 82
   image:
     name: "ivanantonov97/urxiv_submission_ui"
