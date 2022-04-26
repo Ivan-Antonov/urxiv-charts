@@ -1,0 +1,50 @@
+# Declare variables to be passed into your templates.
+name: urxiv-auth
+namespace: default
+
+scaling:
+  replicas: "1"
+
+env:
+  db_uri: "mysql://localhost:5432"
+  redis:
+    host: "localhost"
+    port: 7000
+    database: 0
+  vault:
+    enabled: 1
+  s3:
+    host: "urxiv.s3.amazonaws.com"
+    bucket_name: "urxiv"
+
+accounts:
+  path: /accounts
+  port: 81
+  image:
+    name: "ivanantonov97/urxiv_auth_accounts"
+    tag: "0.0.2"
+
+registry:
+  paths:
+    user: /user
+    register: /register
+    lost_password: /lost_password
+  port: 82
+  image:
+    name: "ivanantonov97/urxiv_auth_registry"
+    tag: "0.0.1"
+
+authenticator:
+  path: /authenticator
+  port: 83
+  image:
+    name: "ivanantonov97/urxiv_auth_authenticator"
+    tag: "0.0.1"
+
+loglevel: "40"
+
+labels:
+  subsystem: auth
+ingress:
+  host: urxiv.org
+  name: urxiv-auth-ingress
