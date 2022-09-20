@@ -251,7 +251,7 @@ spec:
               value: "1"
 
             - name: JWT_SECRET
-              value: "{{ .Values.jwt.secret }}"
+              value: "{{ .Values.env.jwt.secret }}"
 
             - name: VAULT_ENABLED
               value: "0"
