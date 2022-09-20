@@ -5,22 +5,80 @@ namespace: default
 scaling:
   replicas: "1"
 
+config:
+  loglevel: "40"
+  wait_for_services: 1
+  wait_on_startup: 10
+
+labels:
+  subsystem: submission
+ingress:
+  proto: https
+  host: urxiv.org
+  name: urxiv-submission-ingress
+  path: /
+  auth_url: "http://localhost:5000/auth"
+
 env:
-  db_uri: "mysql://localhost:5432"
-  redis:
-    host: "localhost"
-    port: 7000
-    database: 0
+  # email:
+  #   hostname:
+  #     port:
+  #       username:
+  #         password:
+  #           ssl:
+  aws:
+    key: 'asd123'
+    key_id: 'nope'
+    key_secret: 'nope'
+    region: 'us-west-2'
+
+  jwt:
+    secret: "foosecret"
+
   vault:
-    enabled: 1
+    enabled: 0
+    host: "localhost"
+    port: 3001
+    role: "urxiv-submission"
+
   s3:
     host: "urxiv.s3.amazonaws.com"
     bucket_name: "urxiv"
+    service: "urxiv"
+    port: 80
+
+  db:
+    endpoint: "mysql://localhost:5432"
+    track_mod: false
+  redis:
+    host: "localhost"
+    port: 7000
+    db: 0
+  kinesis:
+    stream: "submissionEvents"
+    shard_id: 0
+    endpoint: "localhost"
+    type: "trim-horizon"
+    verify: 0
+
 
 submission_agent:
   port: 81
   image:
     name: "ivanantonov97/urxiv_submission_agent"
+    tag: "0.0.1"
+  env:
+    agent_prefix: "submission-agent-"
+    worker_prefix: "submission-worker"
+
+submission_preview:
+  path: "/preview"
+  port: 81
+  linking_to:
+    host: "urxiv"
+    port: 81
+  image:
+    name: "ivanantonov97/urxiv_submission_preview"
     tag: "0.0.1"
 
 submission_ui:
@@ -37,10 +95,18 @@ submission_filemanager:
     name: "ivanantonov97/urxiv_submission_filemanager"
     tag: "0.0.1"
 
-loglevel: "40"
+submission_metadata:
+  path: /submission
+  port: 83
+  image:
+    name: "ivanantonov97/urxiv_submission_metadata"
+    tag: "0.0.1"
 
-labels:
-  subsystem: submission
-ingress:
-  host: urxiv.org
-  name: urxiv-submission-ingress
+# submission_compiler:
+#   path: /
+
+# submission_classifier:
+#   path: /
+
+# submission_plaintext:
+#   path: /

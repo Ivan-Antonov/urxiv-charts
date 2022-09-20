@@ -16,15 +16,16 @@ spec:
     - port: {{ .Values.accounts.port }}
       targetPort: 8081
       protocol: TCP
-      name: http
+      name: accounts
     - port: {{ .Values.registry.port }}
       targetPort: 8082
       protocol: TCP
-      name: http
+      name: registry
     - port: {{ .Values.authenticator.port }}
       targetPort: 8083
       protocol: TCP
-      name: http
+      name: authenticator
+
   selector:
     subsystem: "{{ .Values.labels.subsystem }}"
     container: "{{ .Values.name }}"

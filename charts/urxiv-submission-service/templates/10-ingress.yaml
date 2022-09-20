@@ -10,8 +10,13 @@ metadata:
     env: "{{ .Values.namespace }}"
   annotations:
     kubernetes.io/ingress.class: "nginx"
+    nginx.ingress.kubernetes.io/auth-url: "{{ .Values.ingress.auth_url }}"
+    # Look at issue https://kubernetes.github.io/ingress-nginx/user-guide/nginx-configuration/annotations/#configuration-snippet
+    # nginx.ingress.kubernetes.io/configuration-snippet: |
+    #   proxy_set_header Authorization $upstream_http_authorization;
+    #   proxy_set_header X-Request-ID $request_id;
     nginx.ingress.kubernetes.io/rewrite-target: "/*"
-    # nginx.ingress.kubernetes.io/force-ssl-redirect: "false"
+    # nginx.ingress.kubernetes.io/force-ssl-redirect: "false" Don't add
     # nginx.ingress.kubernetes.io/ssl-redirect: "true"
     # nginx.ingress.kubernetes.io/ssl-passthrough: "true"
     # nginx.ingress.kubernetes.io/server-snippet: |
@@ -24,7 +29,7 @@ spec:
     http:
       paths:
         - pathType: Exact
-          path: "{{ .Values.submmision_ui.path }}"
+          path: "{{ .Values.submission_ui.path }}"
           backend:
             service:
               name: "{{ .Values.name }}"

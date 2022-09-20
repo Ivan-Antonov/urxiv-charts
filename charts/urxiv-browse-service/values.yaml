@@ -7,10 +7,15 @@ scaling:
   replicas: "1"
 
 env:
-  db_uri: "mysql://localhost:5432"
+  aws:
+    key: 'asd123'
+  db:
+    endpoint: "mysql://localhost:5432"
   s3:
     host: "urxiv.s3.amazonaws.com"
     bucket_name: "urxiv"
+    service: "urxiv"
+    port: 80
 
 image:
   name: "ivanantonov97/urxiv_browse"
@@ -24,3 +29,4 @@ ingress:
   host: urxiv.org
   path: /*
   name: urxiv-browse-ingress
+  auth_url: /auth

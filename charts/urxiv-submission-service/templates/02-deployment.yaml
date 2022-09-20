@@ -9,11 +9,13 @@ metadata:
     service-group: api
     log-style: uwsgi
     env: "{{ .Values.namespace }}"
+
 spec:
   replicas: {{  int .Values.scaling.replicas }}
   selector:
     matchLabels:
       subsystem: "{{ .Values.labels.subsystem }}"
+
   template:
     metadata:
       labels:
@@ -22,29 +24,88 @@ spec:
         service-group: api
         log-style: uwsgi
         env: "{{ .Values.namespace }}"
+
     spec:
       serviceAccount: urxiv-submission
+      volumes:
+        - name: "{{ default "filemanager" .Values.deployment.name }}-data"
+          persistentVolumeClaim:
+          claimName: "{{ default "filemanager" .Values.deployment.name }}-data"
+      #   - name: vault-token
+      #     emptyDir: {}
+      #   - name: vault-certficate
+      #     secret:
+      #       secretName: vault-certificate
+
       containers:
-        - name: "{{ .Values.name }}:submission_ui"
-          image: "{{ .Values.submission_agent.image.name }}:{{ .Values.accounts.image.tag }}"
+        - name: "{{ .Values.name }}:submission_filemanager"
+          image: "{{ .Values.submission_filemanager.image.name }}:{{ .Values.submission_filemanager.image.tag }}"
           imagePullPolicy: Always
           ports:
             - containerPort: 8081
+
+          readinessProbe:
+            periodSeconds: 30
+            httpGet:
+              path: "{{ .Values.ingress.path }}/filemanager/api/status"
+              port: 8000
+
           env:
+            - name: LOGLEVEL
+              value: "{{ .Values.loglevel }}"
+
+            - name: NAMESPACE
+              value: "{{ .Values.namespace }}"
+            - name: SECRET_KEY
+              value: "{{ .Values.env.aws.key }}"
+            - name: AWS_ACCESS_KEY_ID
+              value: "{{ .Values.env.aws.key_id }}"
+            - name: AWS_SECRET_ACCESS_KEY
+              value: "{{ .Values.env.aws.key_secret }}"
+            - name: AWS_REGION
+              value: "{{ .Values.env.aws.region }}"
+
+            - name: CLASSIC_DATABASE_URI
+              value: "{{ .Values.env.db.endpoint }}"
+
+            - name: JWT_SECRET
+              value: "{{ .Values.env.jwt.secret }}"
+
+            - name: ARXIV_HOME_URL
+              value: "{{ .Values.ingress.host }}"
+
             - name: VAULT_ENABLED
               value: "0"
-            - name: KINESIS_STREAM
-              value: "{{ .Values.kinesis.stream }}"
-            - name: KINESIS_SHARD_ID
-              value: "{{ .Values.kinesis.shard_id }}"
-            - name: FILEMANAGER_PATH
-              value: "{{ .Values.filemanager.path }}"
-            - name: VAULT_ENABLED
-              value: "{{ .Values.env.vault.enabled }}"
+            - name: VAULT_HOST
+              value: "{{ .Values.env.vault.host }}"
+            - name: VAULT_PORT
+              value: "{{ .Values.env.vault.port }}"
+            - name: VAULT_CERT
+              value: /etc/vault-certificate/default-cert.pem
+            - name: VAULT_ROLE
+              value: "{{ .Values.env.vault.role }}"
+
+            - name: STORAGE_BACKEND
+              value: "{{ .Values.env.s3.host}}"
+            - name: STORAGE_BASE_PATH
+              value: /data
+            - name: STORAGE_QUARANTINE_PATH
+              value: /quarantine
+
             - name: APPLICATION_ROOT
               value: "{{ .Values.ingress.path }}"
-            - name: BASE_SERVER
-              value: "{{ .Values.ingress.host }}"
+
+            - name: ARXIV_FILE_MANAGMENT
+              value: "urxiv-filemanager"
+
+
+          # volumeMounts:
+          #   - name: vault-certificate
+          #     mountPath: /etc/vault-certificate
+          #     readOnly: true
+          #   - name: vault-token
+          #     mountPath: /etc/vault
+
           resources:
             limits:
               cpu: 300m
@@ -52,11 +113,89 @@ spec:
             requests:
               cpu: 200m
               memory: 256Mi
-        - name: "{{ .Values.name }}:submission_filemanager"
+
+        - name: "{{ .Values.name }}:submission_ui"
           image: "{{ .Values.submission_ui.image.name }}:{{ .Values.registry.image.tag }}"
           imagePullPolicy: Always
           ports:
             - containerPort: 8082
+
+          readinessProbe:
+            initialDelaySeconds: 30
+            periodSeconds: 30
+            httpGet:
+              path: "{{ .Values.ingress.path }}/status"
+              port: 8082
+
+          env:
+            - name: LOGLEVEL
+              value: "{{ .Values.loglevel }}"
+
+            - name: JWT_SECRET
+              value: "{{ .Values.env.jwt.secret }}"
+
+            - name: CLASSIC_DATABASE_URI
+              value: "{{ .Values.env.db.endpoint }}"
+
+            - name: PREVIEW_HOST
+              value: "{{ .Values.submission_preview.linking_to.host }}"
+            - name: PREVIEW_PORT
+              value:  "{{ .Values.submission_preview.linking_to.port }}"
+
+            - name: FILEMANAGER_HOST
+              value:  "{{ .Values.env.s3.service }}"
+
+            - name: FILEMANAGER_PORT
+              value:  "{{ .Values.env.s3.port }}"
+
+            - name: FILEMANAGER_PROTO
+              value: 0
+
+            - name: AWS_ACCESS_KEY_ID
+              value: "{{ .Values.env.aws.key_id }}"
+            - name: AWS_SECRET_ACCESS_KEY
+              value: "{{ .Values.env.aws.key_secret }}"
+            - name: AWS_REGION
+              value: "{{ .Values.env.aws.region }}"
+
+            - name: KINESIS_STREAM
+              value: "{{ .Values.kinesis.stream }}"
+            - name: KINESIS_SHARD_ID
+              value: "{{ .Values.kinesis.shard_id }}"
+
+            - name: VAULT_ENABLED
+              value: "0"
+            - name: VAULT_HOST
+              value: "{{ .Values.env.vault.host }}"
+            - name: VAULT_PORT
+              value: "{{ .Values.env.vault.port }}"
+            - name: VAULT_CERT
+              value: /etc/vault-certificate/default-cert.pem
+            - name: VAULT_ROLE
+              value: "{{ .Values.env.vault.role }}"
+
+
+            - name: NAMESPACE
+              value: "{{ .Values.namespace }}"
+
+            - name: WAIT_FOR_SERVICES
+              value: "{{ .Values.config.wait_for_services }}"
+            - name: WAIT_ON_STARTUP
+              value: "{{ .Values.config.wait_on_startup }}"
+
+
+            - name: APPLICATION_ROOT
+              value: "{{ .Values.ingress.path }}"
+            - name: BASE_SERVER
+              value: "{{ .Values.base_server }}"
+
+          # volumeMounts:
+          #   - name: vault-certificate
+          #     mountPath: /etc/vault-certificate
+          #     readOnly: true
+          #   - name: vault-token
+          #     mountPath: /etc/vault
+
           resources:
             limits:
               cpu: 300m
@@ -64,11 +203,291 @@ spec:
             requests:
               cpu: 200m
               memory: 256Mi
-        - name: "{{ .Values.name }}:submission_agent"
-          image: "{{ .Values.authenticator.image.name }}:{{ .Values.submission_filemanager.image.tag }}"
+###########################
+        - name: "{{ .Values.name }}:submission_agent_brain"
+          image: "{{ .Values.submission_agent.image.name }}:{{ .Values.submission_agent.image.tag }}"
+          imagePullPolicy: Always
+
+          env:
+            - name: LOGLEVEL
+              value: "{{ .Values.loglevel }}"
+
+            - name: JWT_SECRET
+              value: "{{ .Values.env.jwt.secret }}"
+
+            - name: VAULT_ENABLED
+              value: "0"
+            - name: VAULT_HOST
+              value: "{{ .Values.env.vault.host }}"
+            - name: VAULT_PORT
+              value: "{{ .Values.env.vault.port }}"
+            - name: VAULT_CERT
+              value: /etc/vault-certificate/default-cert.pem
+            - name: VAULT_ROLE
+              value: "{{ .Values.env.vault.role }}"
+
+            - name: CLASSIC_DATABASE_URI
+              value: "{{ .Values.env.db.endpoint }}"
+            - name: SUBMISSION_AGENT_DATABASE_URI
+              value: "{{ .Values.env.db.endpoint }}"
+
+            - name: AWS_ACCESS_KEY_ID
+              value: "{{ .Values.env.aws.key_id }}"
+            - name: AWS_SECRET_ACCESS_KEY
+              value: "{{ .Values.env.aws.key_secret }}"
+            - name: AWS_REGION
+              value: "{{ .Values.env.aws.region }}"
+
+            - name: KINESIS_STREAM
+              value: "{{ .Values.kinesis.stream }}"
+            - name: KINESIS_SHARD_ID
+              value: "{{ .Values.kinesis.shard_id }}"
+            - name: KINESIS_START_TYPE
+              value: "{{ .Values.kinesis.type }}"
+            - name: KINESIS_VERIFY
+              value: "{{ .Values.kinesis.verify }}"
+
+            - name: BROKER_URL
+              value: "redis://{{ .Values.redis.host }}:{{ .Values.redis.port }}/{{ .Values.redis.db }}"
+
+            - name: AGENT_DATABASE_HOST
+              value: "{{ .Values.database.host }}"
+
+
+            - name: NAMESPACE
+              value: "{{ .Values.namespace }}"
+
+            - name: WAIT_FOR_SERVICES
+              value: "{{ .Values.config.wait_for_services }}"
+            - name: WAIT_ON_STARTUP
+              value: "{{ .Values.config.wait_on_startup }}"
+
+
+            - name: FILEMANAGER_HOST
+              value:  "{{ .Values.env.s3.service }}"
+
+            - name: FILEMANAGER_PORT
+              value:  "{{ .Values.env.s3.port }}"
+            - name: FILEMANAGER_PROTO
+              value: 0
+
+            - name: PREVIEW_HOST
+              value: "{{ .Values.submission_preview.linking_to.host }}"
+            - name: PREVIEW_PORT
+              value:  "{{ .Values.submission_preview.linking_to.port }}"
+
+            - name: SERVER_NAME
+              value: "{{ .Values.ui.host }}"
+
+          # volumeMounts:
+          #   - name: vault-certificate
+          #     mountPath: /etc/vault-certificate
+          #     readOnly: true
+          #   - name: vault-token
+          #     mountPath: /etc/vault
+
+          resources:
+            limits:
+              cpu: 300m
+              memory: 256Mi
+            requests:
+              cpu: 200m
+              memory: 256Mi
+
+        - name: "{{ .Values.name }}:submission_agent_worker"
+          image: "{{ .Values.submission_agent.image.name }}:{{ .Values.submission_agent.image.tag }}"
+          command: ["pipenv", "run", "celery", "worker", "-A", "agent.worker.worker_app", "--loglevel=INFO", "-E", "--concurrency=2"]
+          imagePullPolicy: Always
+
+          env:
+            - name: LOGLEVEL
+              value: "{{ .Values.loglevel }}"
+
+            - name: JWT_SECRET
+              value: "{{ .Values.env.jwt.secret }}"
+
+            - name: VAULT_ENABLED
+              value: "0"
+            - name: VAULT_HOST
+              value: "{{ .Values.env.vault.host }}"
+            - name: VAULT_PORT
+              value: "{{ .Values.env.vault.port }}"
+            - name: VAULT_CERT
+              value: /etc/vault-certificate/default-cert.pem
+            - name: VAULT_ROLE
+              value: "{{ .Values.env.vault.role }}"
+
+            - name: CLASSIC_DATABASE_URI
+              value: "{{ .Values.env.db.endpoint }}"
+            - name: SUBMISSION_AGENT_DATABASE_URI
+              value: "{{ .Values.env.db.endpoint }}"
+
+            - name: AWS_ACCESS_KEY_ID
+              value: "{{ .Values.env.aws.key_id }}"
+            - name: AWS_SECRET_ACCESS_KEY
+              value: "{{ .Values.env.aws.key_secret }}"
+            - name: AWS_REGION
+              value: "{{ .Values.env.aws.region }}"
+
+            - name: KINESIS_STREAM
+              value: "{{ .Values.kinesis.stream }}"
+            - name: KINESIS_SHARD_ID
+              value: "{{ .Values.kinesis.shard_id }}"
+            - name: KINESIS_START_TYPE
+              value: "{{ .Values.kinesis.type }}"
+            - name: KINESIS_VERIFY
+              value: "{{ .Values.kinesis.verify }}"
+
+            - name: BROKER_URL
+              value: "redis://{{ .Values.redis.host }}:{{ .Values.redis.port }}/{{ .Values.redis.db }}"
+
+            - name: AGENT_DATABASE_HOST
+              value: "{{ .Values.database.host }}"
+
+
+            - name: NAMESPACE
+              value: "{{ .Values.namespace }}"
+
+            - name: WAIT_FOR_SERVICES
+              value: "{{ .Values.config.wait_for_services }}"
+            - name: WAIT_ON_STARTUP
+              value: "{{ .Values.config.wait_on_startup }}"
+
+
+            - name: FILEMANAGER_HOST
+              value:  "{{ .Values.env.s3.service }}"
+
+            - name: FILEMANAGER_PORT
+              value:  "{{ .Values.env.s3.port }}"
+            - name: FILEMANAGER_PROTO
+              value: 0
+
+            - name: PREVIEW_HOST
+              value: "{{ .Values.submission_preview.linking_to.host }}"
+            - name: PREVIEW_PORT
+              value:  "{{ .Values.submission_preview.linking_to.port }}"
+
+            - name: SERVER_NAME
+              value: "{{ .Values.ui.host }}"
+
+          # volumeMounts:
+          #   - name: vault-certificate
+          #     mountPath: /etc/vault-certificate
+          #     readOnly: true
+          #   - name: vault-token
+          #     mountPath: /etc/vault
+
+          resources:
+            limits:
+              cpu: 300m
+              memory: 256Mi
+            requests:
+              cpu: 200m
+              memory: 256Mi
+
+        - name: "{{ .Values.name }}:submission_metadata"
+          image: "{{ .Values.submission_metadata.image.name }}:{{ .Values.submission_metadata.image.tag }}"
           imagePullPolicy: Always
           ports:
             - containerPort: 8083
+
+          env:
+            - name: LOGLEVEL
+              value: "{{ .Values.loglevel }}"
+            - name: JWT_SECRET
+              value: "{{ .Values.env.jwt.secret }}"
+
+            - name: EVENTS_ENDPOINT
+              value: "redis://{{ .Values.redis.host }}:{{ .Values.redis.port }}/{{ .Values.redis.db }}"
+            - name: JWT_SECRET
+              value: "{{ .Values.env.jwt.secret }}"
+
+            - name: UPLOAD_S3_BUCKET
+              value: "{{ .Values.env.s3.host }}/submission"
+
+
+            - name: CLASSIC_DATABASE_URI
+              value: "{{ .Values.env.db.endpoint }}"
+            - name: REPOSITORY_NAME
+              value: 'urXiv'
+
+          # volumeMounts:
+          #   - name: vault-certificate
+          #     mountPath: /etc/vault-certificate
+          #     readOnly: true
+          #   - name: vault-token
+          #     mountPath: /etc/vault
+
+          resources:
+            limits:
+              cpu: 300m
+              memory: 256Mi
+            requests:
+              cpu: 200m
+              memory: 256Mi
+
+        - name: "{{ .Values.name }}:submission_preview"
+          image: "{{ .Values.submission_preview.image.name }}:{{ .Values.submission_preview.image.tag }}"
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 8083
+
+          readinessProbe:
+            initialDelaySeconds: 30
+            periodSeconds: 30
+            httpGet:
+              path: "/status"
+              port: 8083
+
+          env:
+            - name: LOGLEVEL
+              value: "{{ .Values.config.loglevel }}"
+            - name: NAMESPACE
+              value: "{{ .Values.namespace }}"
+            - name: APPLICATION_ROOT
+              value: "{{ .Values.ingress.path }}"
+            - name: SERVER_NAME
+              value: "{{ .Values.ingress.host }}"
+
+            - name: WAIT_FOR_SERVICES
+              value: "{{ .Values.wait_for_services }}"
+
+            - name: S3_BUCKET
+              value: "{{ .Values.env.s3.bucket_name }}"
+            - name: S3_ENDPOINT
+              value: "{{ .Values.env.s3.host }}"
+            - name: S3_VERIFY
+              value: 0
+
+            - name: AWS_ACCESS_KEY_ID
+              value: "{{ .Values.env.aws.id }}"
+            - name: AWS_SECRET_ACCESS_KEY
+              value: "{{ .Values.env.aws.secret_key }}"
+            - name: AWS_REGION
+              value: "{{ .Values.env.aws.region }}"
+            - name: JWT_SECRET
+              value: "{{ .Values.env.jwt.secret }}"
+
+            - name: VAULT_ENABLED
+              value: "0"
+            - name: VAULT_HOST
+              value: "{{ .Values.env.vault.host }}"
+            - name: VAULT_PORT
+              value: "{{ .Values.env.vault.port }}"
+            - name: VAULT_CERT
+              value: /etc/vault-certificate/default-cert.pem
+            - name: VAULT_ROLE
+              value: "{{ .Values.env.vault.role }}"
+
+
+          # volumeMounts:
+          #   - name: vault-certificate
+          #     mountPath: /etc/vault-certificate
+          #     readOnly: true
+          #   - name: vault-token
+          #     mountPath: /etc/vault
+
+          resources:
             limits:
               cpu: 300m
               memory: 256Mi

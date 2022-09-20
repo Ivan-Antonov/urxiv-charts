@@ -5,17 +5,49 @@ namespace: default
 scaling:
   replicas: "1"
 
+labels:
+  subsystem: auth
+ingress:
+  host: urxiv.org
+  name: urxiv-auth-ingress
+
 env:
-  db_uri: "mysql://localhost:5432"
+  aws:
+    key: 'asd123'
+    key_id: 'nope'
+    key_secret: 'nope'
+    region: 'us-west-2'
+
   redis:
     host: "localhost"
     port: 7000
     database: 0
+
+  jwt:
+    secret: "foosecret"
+
+  captcha:
+    secret: "foobar"
+
+  db:
+    endpoint: "mysql://localhost:5432"
+
+  redis:
+    host: "localhost"
+    port: 7000
+    db: 0
+
   vault:
-    enabled: 1
+    enabled: 0
+    host: "localhost"
+    port: 3001
+    role: "urxiv-submission"
+
   s3:
     host: "urxiv.s3.amazonaws.com"
     bucket_name: "urxiv"
+    service: "urxiv"
+    port: 80
 
 accounts:
   path: /accounts
@@ -35,16 +67,10 @@ registry:
     tag: "0.0.1"
 
 authenticator:
-  path: /authenticator
+  path: /auth
   port: 83
   image:
     name: "ivanantonov97/urxiv_auth_authenticator"
     tag: "0.0.1"
 
 loglevel: "40"
-
-labels:
-  subsystem: auth
-ingress:
-  host: urxiv.org
-  name: urxiv-auth-ingress

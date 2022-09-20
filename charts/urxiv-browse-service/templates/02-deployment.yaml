@@ -24,25 +24,64 @@ spec:
         env: "{{ .Values.namespace }}"
     spec:
       serviceAccount: urxiv-browse
+      # volumes:
+      #   - name: vault-token
+      #     emptyDir: {}
+      #   - name: vault-certficate
+      #     secret:
+      #       secretName: vault-certificate
+
       containers:
         - name: "{{ .Values.name }}"
           image: "{{ .Values.image.name }}:{{ .Values.image.tag }}"
           imagePullPolicy: Always
           ports:
             - containerPort: 8000
+
+          readinessProbe:
+            initialDelaySeconds: 30
+            periodSeconds: 30
+            httpGet:
+              path: "{{ .Values.ingress.path }}/status"
+              port: 8000
+
           env:
             - name: BASE_SERVER
+              value: "{{ .Values.ingress.host }}"
+            - name: BROWSE_SERVER_NAME
               value: "{{ .Values.ingress.host }}"
             - name: SERVER_NAME
               value: "{{ .Values.ingress.host }}"
             - name: APPLICATION_ROOT
               value: "{{ .Values.ingress.path }}"
+
+            - name: SECRET_KEY
+              value: "{{ .Values.env.aws.key }}"
+
+            - name: FLASKS3_ACTIVE
+              value: 1
             - name: FLASKS3_BUCKET_NAME
               value: "{{ .Values.env.s3.bucket_name }}"
             - name: FLASKS3_CDN_DOMAIN
-              value: "{{ .Values.env.s3.host }}"
+              value: "{{ .Values.env.s3.service }}"
+            - name: FLASKS3_USE_HTTPS
+              value: 0
+
             - name: SQLALCHEMY_DATABASE_URI
-              value: "{{ .Values.env.db_uri }}"
+              value: "{{ .Values.env.db.endpoint }}"
+
+            - name: BROWSE_SITE_LABEL
+              value: "{{ .Values.ingress.host }}"
+            - name: AUTH_SESSION_COOKIE_DOMAIN
+              value: "{{ .Values.ingress.host }}"
+
+          # volumeMounts:
+          #   - name: vault-certificate
+          #     mountPath: /etc/vault-certificate
+          #     readOnly: true
+          #   - name: vault-token
+          #     mountPath: /etc/vault
+
           resources:
             limits:
               cpu: 300m
