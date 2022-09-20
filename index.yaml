@@ -2,6 +2,16 @@ apiVersion: v1
 entries:
   urxiv-auth-service:
   - apiVersion: v2
+    appVersion: 1.0.2
+    created: "2022-09-20T17:44:42.360912055Z"
+    description: A Helm chart for Urxiv Auth Application
+    digest: af5ffbfa7097cd3b396ad95ef1657877f83ac03355062c8d1d46d81b0734076b
+    name: urxiv-auth-service
+    type: application
+    urls:
+    - https://github.com/Ivan-Antonov/urxiv-charts/releases/download/urxiv-auth-service-1.0.2/urxiv-auth-service-1.0.2.tgz
+    version: 1.0.2
+  - apiVersion: v2
     appVersion: 1.0.1
     created: "2022-09-20T16:01:00.978105682Z"
     description: A Helm chart for Urxiv Auth Application
@@ -62,6 +72,16 @@ entries:
     - https://github.com/Ivan-Antonov/urxiv-charts/releases/download/urxiv-auth-service-0.1.0/urxiv-auth-service-0.1.0.tgz
     version: 0.1.0
   urxiv-browse-service:
+  - apiVersion: v2
+    appVersion: 1.0.2
+    created: "2022-09-20T17:44:42.538057165Z"
+    description: A Helm chart for Urxiv Browse Application
+    digest: e5adeec1caa3ba8e2a9c7078cf5064b695d6bf39465b906761b2e1e49b6b581b
+    name: urxiv-browse-service
+    type: application
+    urls:
+    - https://github.com/Ivan-Antonov/urxiv-charts/releases/download/urxiv-browse-service-1.0.2/urxiv-browse-service-1.0.2.tgz
+    version: 1.0.2
   - apiVersion: v2
     appVersion: 1.0.1
     created: "2022-09-20T16:01:01.147820828Z"
@@ -214,6 +234,16 @@ entries:
     version: 0.1.1
   urxiv-submission-service:
   - apiVersion: v2
+    appVersion: 1.0.2
+    created: "2022-09-20T17:44:42.719200538Z"
+    description: A Helm chart for Urxiv Submission Application
+    digest: 1ec43daf4b496ca3082b8a39819fb318efb123c0c11f514e305fc5b2cb5919df
+    name: urxiv-submission-service
+    type: application
+    urls:
+    - https://github.com/Ivan-Antonov/urxiv-charts/releases/download/urxiv-submission-service-1.0.2/urxiv-submission-service-1.0.2.tgz
+    version: 1.0.2
+  - apiVersion: v2
     appVersion: 1.0.1
     created: "2022-09-20T16:01:01.386112331Z"
     description: A Helm chart for Urxiv Submission Application
@@ -263,4 +293,4 @@ entries:
     urls:
     - https://github.com/Ivan-Antonov/urxiv-charts/releases/download/urxiv-submission-service-0.1.0/urxiv-submission-service-0.1.0.tgz
     version: 0.1.0
-generated: "2022-09-20T16:01:01.386242231Z"
+generated: "2022-09-20T17:44:42.719489457Z"
