@@ -59,13 +59,13 @@ spec:
               value: "{{ .Values.env.aws.key }}"
 
             - name: FLASKS3_ACTIVE
-              value: 1
+              value: "1"
             - name: FLASKS3_BUCKET_NAME
               value: "{{ .Values.env.s3.bucket_name }}"
             - name: FLASKS3_CDN_DOMAIN
               value: "{{ .Values.env.s3.service }}"
             - name: FLASKS3_USE_HTTPS
-              value: 0
+              value: "0"
 
             - name: SQLALCHEMY_DATABASE_URI
               value: "{{ .Values.env.db.endpoint }}"

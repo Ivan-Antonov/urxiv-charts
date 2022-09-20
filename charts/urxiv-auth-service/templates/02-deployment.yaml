@@ -106,13 +106,13 @@ spec:
               value: "https"
 
             - name: FLASKS3_ACTIVE
-              value: 1
+              value: "1"
             - name: FLASKS3_BUCKET_NAME
               value: "{{ .Values.env.s3.bucket_name }}"
             - name: FLASKS3_CDN_DOMAIN
               value: "{{ .Values.env.s3.service }}"
             - name: FLASKS3_USE_HTTPS
-              value: 0
+              value: "0"
 
           # volumeMounts:
           #   - name: vault-certificate
@@ -206,7 +206,7 @@ spec:
             - name: FLASKS3_CDN_DOMAIN
               value: "{{ .Values.env.s3.service }}"
             - name: FLASKS3_USE_HTTPS
-              value: 0
+              value: "0"
 
 
           # volumeMounts:
@@ -251,7 +251,7 @@ spec:
               value: "1"
 
             - name: JWT_SECRET
-              value: "{{ .Values.jwt.secret }}"
+              value: "{{ .Values.env.jwt.secret }}"
 
             - name: VAULT_ENABLED
               value: "0"
