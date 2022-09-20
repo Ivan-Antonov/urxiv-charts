@@ -88,9 +88,9 @@ spec:
             - name: STORAGE_BACKEND
               value: "{{ .Values.env.s3.host}}"
             - name: STORAGE_BASE_PATH
-              value: /data
+              value: '/data'
             - name: STORAGE_QUARANTINE_PATH
-              value: /quarantine
+              value: '/quarantine'
 
             - name: APPLICATION_ROOT
               value: "{{ .Values.ingress.path }}"
@@ -149,7 +149,7 @@ spec:
               value:  "{{ .Values.env.s3.port }}"
 
             - name: FILEMANAGER_PROTO
-              value: 0
+              value: '0'
 
             - name: AWS_ACCESS_KEY_ID
               value: "{{ .Values.env.aws.key_id }}"
@@ -269,7 +269,7 @@ spec:
             - name: FILEMANAGER_PORT
               value:  "{{ .Values.env.s3.port }}"
             - name: FILEMANAGER_PROTO
-              value: 0
+              value: '0'
 
             - name: PREVIEW_HOST
               value: "{{ .Values.submission_preview.linking_to.host }}"
@@ -360,7 +360,7 @@ spec:
             - name: FILEMANAGER_PORT
               value:  "{{ .Values.env.s3.port }}"
             - name: FILEMANAGER_PROTO
-              value: 0
+              value: '0'
 
             - name: PREVIEW_HOST
               value: "{{ .Values.submission_preview.linking_to.host }}"
@@ -457,7 +457,7 @@ spec:
             - name: S3_ENDPOINT
               value: "{{ .Values.env.s3.host }}"
             - name: S3_VERIFY
-              value: 0
+              value: '0'
 
             - name: AWS_ACCESS_KEY_ID
               value: "{{ .Values.env.aws.id }}"
