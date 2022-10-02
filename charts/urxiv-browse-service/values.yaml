@@ -19,14 +19,14 @@ env:
 
 image:
   name: "ivanantonov97/urxiv_browse"
-  tag: "0.0.1"
+  tag: "0.0.6"
 
 loglevel: "40"
 
 labels:
   subsystem: frontend
 ingress:
-  host: urxiv.org
+  host: ivan-antonov.art
   path: /*
   name: urxiv-browse-ingress
   auth_url: /auth

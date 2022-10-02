@@ -27,10 +27,6 @@ spec:
 
     spec:
       serviceAccount: urxiv-submission
-      volumes:
-        - name: "{{ default "filemanager" .Values.deployment.name }}-data"
-          persistentVolumeClaim:
-          claimName: "{{ default "filemanager" .Values.deployment.name }}-data"
       #   - name: vault-token
       #     emptyDir: {}
       #   - name: vault-certficate
@@ -38,17 +34,17 @@ spec:
       #       secretName: vault-certificate
 
       containers:
-        - name: "{{ .Values.name }}:submission_filemanager"
+        - name: "{{ .Values.name }}-submission_filemanager"
           image: "{{ .Values.submission_filemanager.image.name }}:{{ .Values.submission_filemanager.image.tag }}"
           imagePullPolicy: Always
           ports:
             - containerPort: 8081
 
-          readinessProbe:
-            periodSeconds: 30
-            httpGet:
-              path: "{{ .Values.ingress.path }}/filemanager/api/status"
-              port: 8000
+          # readinessProbe:
+          #   periodSeconds: 30
+          #   httpGet:
+          #     path: "{{ .Values.ingress.path }}/filemanager/api/status"
+          #     port: 8000
 
           env:
             - name: LOGLEVEL
@@ -114,18 +110,18 @@ spec:
               cpu: 200m
               memory: 256Mi
 
-        - name: "{{ .Values.name }}:submission_ui"
-          image: "{{ .Values.submission_ui.image.name }}:{{ .Values.registry.image.tag }}"
+        - name: "{{ .Values.name }}-submission_ui"
+          image: "{{ .Values.submission_ui.image.name }}:{{ .Values.submission_ui.image.tag }}"
           imagePullPolicy: Always
           ports:
             - containerPort: 8082
 
-          readinessProbe:
-            initialDelaySeconds: 30
-            periodSeconds: 30
-            httpGet:
-              path: "{{ .Values.ingress.path }}/status"
-              port: 8082
+          # readinessProbe:
+          #   initialDelaySeconds: 30
+          #   periodSeconds: 30
+          #   httpGet:
+          #     path: "{{ .Values.ingress.path }}/status"
+          #     port: 8082
 
           env:
             - name: LOGLEVEL
@@ -159,9 +155,9 @@ spec:
               value: "{{ .Values.env.aws.region }}"
 
             - name: KINESIS_STREAM
-              value: "{{ .Values.kinesis.stream }}"
+              value: "{{ .Values.env.kinesis.stream }}"
             - name: KINESIS_SHARD_ID
-              value: "{{ .Values.kinesis.shard_id }}"
+              value: "{{ .Values.env.kinesis.shard_id }}"
 
             - name: VAULT_ENABLED
               value: "0"
@@ -204,7 +200,7 @@ spec:
               cpu: 200m
               memory: 256Mi
 ###########################
-        - name: "{{ .Values.name }}:submission_agent_brain"
+        - name: "{{ .Values.name }}-submission_agent_brain"
           image: "{{ .Values.submission_agent.image.name }}:{{ .Values.submission_agent.image.tag }}"
           imagePullPolicy: Always
 
@@ -239,19 +235,19 @@ spec:
               value: "{{ .Values.env.aws.region }}"
 
             - name: KINESIS_STREAM
-              value: "{{ .Values.kinesis.stream }}"
+              value: "{{ .Values.env.kinesis.stream }}"
             - name: KINESIS_SHARD_ID
-              value: "{{ .Values.kinesis.shard_id }}"
+              value: "{{ .Values.env.kinesis.shard_id }}"
             - name: KINESIS_START_TYPE
-              value: "{{ .Values.kinesis.type }}"
+              value: "{{ .Values.env.kinesis.type }}"
             - name: KINESIS_VERIFY
-              value: "{{ .Values.kinesis.verify }}"
+              value: "{{ .Values.env.kinesis.verify }}"
 
             - name: BROKER_URL
-              value: "redis://{{ .Values.redis.host }}:{{ .Values.redis.port }}/{{ .Values.redis.db }}"
+              value: "redis://{{ .Values.env.redis.host }}:{{ .Values.env.redis.port }}/{{ .Values.env.redis.db }}"
 
             - name: AGENT_DATABASE_HOST
-              value: "{{ .Values.database.host }}"
+              value: "{{ .Values.env.db.endpoint }}"
 
 
             - name: NAMESPACE
@@ -277,7 +273,7 @@ spec:
               value:  "{{ .Values.submission_preview.linking_to.port }}"
 
             - name: SERVER_NAME
-              value: "{{ .Values.ui.host }}"
+              value: "{{ .Values.ingress.host }}"
 
           # volumeMounts:
           #   - name: vault-certificate
@@ -294,7 +290,7 @@ spec:
               cpu: 200m
               memory: 256Mi
 
-        - name: "{{ .Values.name }}:submission_agent_worker"
+        - name: "{{ .Values.name }}-submission_agent_worker"
           image: "{{ .Values.submission_agent.image.name }}:{{ .Values.submission_agent.image.tag }}"
           command: ["pipenv", "run", "celery", "worker", "-A", "agent.worker.worker_app", "--loglevel=INFO", "-E", "--concurrency=2"]
           imagePullPolicy: Always
@@ -330,19 +326,19 @@ spec:
               value: "{{ .Values.env.aws.region }}"
 
             - name: KINESIS_STREAM
-              value: "{{ .Values.kinesis.stream }}"
+              value: "{{ .Values.env.kinesis.stream }}"
             - name: KINESIS_SHARD_ID
-              value: "{{ .Values.kinesis.shard_id }}"
+              value: "{{ .Values.env.kinesis.shard_id }}"
             - name: KINESIS_START_TYPE
-              value: "{{ .Values.kinesis.type }}"
+              value: "{{ .Values.env.kinesis.type }}"
             - name: KINESIS_VERIFY
-              value: "{{ .Values.kinesis.verify }}"
+              value: "{{ .Values.env.kinesis.verify }}"
 
             - name: BROKER_URL
-              value: "redis://{{ .Values.redis.host }}:{{ .Values.redis.port }}/{{ .Values.redis.db }}"
+              value: "redis://{{ .Values.env.redis.host }}:{{ .Values.env.redis.port }}/{{ .Values.env.redis.db }}"
 
             - name: AGENT_DATABASE_HOST
-              value: "{{ .Values.database.host }}"
+              value: "{{ .Values.env.db.endpoint }}"
 
 
             - name: NAMESPACE
@@ -368,7 +364,7 @@ spec:
               value:  "{{ .Values.submission_preview.linking_to.port }}"
 
             - name: SERVER_NAME
-              value: "{{ .Values.ui.host }}"
+              value: "{{ .Values.ingress.host }}"
 
           # volumeMounts:
           #   - name: vault-certificate
@@ -385,7 +381,7 @@ spec:
               cpu: 200m
               memory: 256Mi
 
-        - name: "{{ .Values.name }}:submission_metadata"
+        - name: "{{ .Values.name }}-submission_metadata"
           image: "{{ .Values.submission_metadata.image.name }}:{{ .Values.submission_metadata.image.tag }}"
           imagePullPolicy: Always
           ports:
@@ -398,7 +394,7 @@ spec:
               value: "{{ .Values.env.jwt.secret }}"
 
             - name: EVENTS_ENDPOINT
-              value: "redis://{{ .Values.redis.host }}:{{ .Values.redis.port }}/{{ .Values.redis.db }}"
+              value: "redis://{{ .Values.env.redis.host }}:{{ .Values.env.redis.port }}/{{ .Values.env.redis.db }}"
             - name: JWT_SECRET
               value: "{{ .Values.env.jwt.secret }}"
 
@@ -426,18 +422,18 @@ spec:
               cpu: 200m
               memory: 256Mi
 
-        - name: "{{ .Values.name }}:submission_preview"
+        - name: "{{ .Values.name }}-submission_preview"
           image: "{{ .Values.submission_preview.image.name }}:{{ .Values.submission_preview.image.tag }}"
           imagePullPolicy: Always
           ports:
-            - containerPort: 8083
+            - containerPort: 8084
 
-          readinessProbe:
-            initialDelaySeconds: 30
-            periodSeconds: 30
-            httpGet:
-              path: "/status"
-              port: 8083
+          # readinessProbe:
+          #   initialDelaySeconds: 30
+          #   periodSeconds: 30
+          #   httpGet:
+          #     path: "/status"
+          #     port: 8084
 
           env:
             - name: LOGLEVEL

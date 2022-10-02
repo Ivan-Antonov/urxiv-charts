@@ -34,18 +34,18 @@ spec:
       #       secretName: vault-certificate
 
       containers:
-        - name: "{{ .Values.name }}:accounts"
+        - name: "{{ .Values.name }}-accounts"
           image: "{{ .Values.accounts.image.name }}:{{ .Values.accounts.image.tag }}"
           imagePullPolicy: Always
           ports:
             - containerPort: 8081
 
-          readinessProbe:
-            initialDelaySeconds: 30
-            periodSeconds: 30
-            httpGet:
-              path: "{{ .Values.accounts.path}}/status"
-              port: 8081
+          # readinessProbe:
+          #   initialDelaySeconds: 30
+          #   periodSeconds: 30
+          #   httpGet:
+          #     path: "{{ .Values.accounts.path}}/status"
+          #     port: 8081
 
           env:
             - name: BASE_SERVER
@@ -61,11 +61,10 @@ spec:
               value: "{{ .Values.env.aws.key_secret }}"
             - name: AWS_REGION
               value: "{{ .Values.env.aws.region }}"
-
             - name: REDIS_HOST
               value: "{{ .Values.env.redis.host }}"
             - name: REDIS_PORT
-              value: {{ .Values.env.redis.port }}
+              value: "{{ .Values.env.redis.port }}"
             - name: REDIS_DATABASE
               value: "{{ .Values.env.redis.database }}"
             - name: REDIS_CLUSTER
@@ -85,7 +84,7 @@ spec:
             - name: CLASSIC_DATABASE_URI
               value: "{{ .Values.env.db.endpoint }}"
             - name: SQLALCHEMY_TRACK_MODIFICATIONS
-              value: False
+              value: "False"
 
             - name: VAULT_ENABLED
               value: "0"
@@ -129,18 +128,18 @@ spec:
               cpu: 200m
               memory: 256Mi
 
-        - name: "{{ .Values.name }}:registry"
+        - name: "{{ .Values.name }}-registry"
           image: "{{ .Values.registry.image.name }}:{{ .Values.registry.image.tag }}"
           imagePullPolicy: Always
           ports:
             - containerPort: 8082
 
-          readinessProbe:
-            initialDelaySeconds: 30
-            periodSeconds: 30
-            httpGet:
-              path: "{{ .Values.registry.path}}/status"
-              port: 8082
+          # readinessProbe:
+          #   initialDelaySeconds: 30
+          #   periodSeconds: 30
+          #   httpGet:
+          #     path: "{{ .Values.registry.path}}/status"
+          #     port: 8082
           env:
             - name: BASE_SERVER
               value: "{{ .Values.ingress.host }}"
@@ -159,7 +158,7 @@ spec:
             - name: REDIS_HOST
               value: "{{ .Values.env.redis.host }}"
             - name: REDIS_PORT
-              value: {{ .Values.env.redis.port }}
+              value: "{{ .Values.env.redis.port }}"
             - name: REDIS_DATABASE
               value: "{{ .Values.env.redis.database }}"
             - name: REDIS_CLUSTER
@@ -176,7 +175,7 @@ spec:
             - name: CLASSIC_DATABASE_URI
               value: "{{ .Values.env.db.endpoint }}"
             - name: SQLALCHEMY_TRACK_MODIFICATIONS
-              value: False
+              value: "False"
 
             - name: VAULT_ENABLED
               value: "0"
@@ -200,7 +199,7 @@ spec:
               value: "{{ .Values.env.vault.enabled }}"
 
             - name: FLASKS3_ACTIVE
-              value: 1
+              value: "1"
             - name: FLASKS3_BUCKET_NAME
               value: "{{ .Values.env.s3.bucket_name }}"
             - name: FLASKS3_CDN_DOMAIN
@@ -225,18 +224,18 @@ spec:
               memory: 256Mi
 
 
-        - name: "{{ .Values.name }}:authenticator"
+        - name: "{{ .Values.name }}-authenticator"
           image: "{{ .Values.authenticator.image.name }}:{{ .Values.authenticator.image.tag }}"
           imagePullPolicy: Always
           ports:
             - containerPort: 8083
 
-          readinessProbe:
-            initialDelaySeconds: 30
-            periodSeconds: 30
-            httpGet:
-              path: "{{ .Values.authenticator.path}}/status"
-              port: 8083
+          # readinessProbe:
+          #   initialDelaySeconds: 30
+          #   periodSeconds: 30
+          #   httpGet:
+          #     path: "{{ .Values.authenticator.path}}/status"
+          #     port: 8083
           env:
             - name: BASE_SERVER
               value: "{{ .Values.ingress.host }}"
@@ -244,7 +243,7 @@ spec:
             - name: REDIS_HOST
               value: "{{ .Values.env.redis.host }}"
             - name: REDIS_PORT
-              value: {{ .Values.env.redis.port }}
+              value: "{{ .Values.env.redis.port }}"
             - name: REDIS_DATABASE
               value: "{{ .Values.env.redis.database }}"
             - name: REDIS_CLUSTER

@@ -46,7 +46,7 @@ spec:
     http:
       paths:
         - pathType: Exact
-          path: "{{ .Values.submmision_ui.path }}"
+          path: "{{ .Values.submission_ui.path }}"
           backend:
             service:
               name: "{{ .Values.name }}"

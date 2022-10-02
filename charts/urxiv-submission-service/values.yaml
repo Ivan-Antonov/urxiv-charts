@@ -14,10 +14,10 @@ labels:
   subsystem: submission
 ingress:
   proto: https
-  host: urxiv.org
+  host: ivan-antonov.art
   name: urxiv-submission-ingress
   path: /
-  auth_url: "http://localhost:5000/auth"
+  auth_url: "http://ivan-antonov.art/auth"
 
 env:
   # email:
@@ -36,7 +36,7 @@ env:
     secret: "foosecret"
 
   vault:
-    enabled: 0
+    enabled: "0"
     host: "localhost"
     port: 3001
     role: "urxiv-submission"
@@ -53,13 +53,13 @@ env:
   redis:
     host: "localhost"
     port: 7000
-    db: 0
+    db: "0"
   kinesis:
     stream: "submissionEvents"
-    shard_id: 0
+    shard_id: "0"
     endpoint: "localhost"
     type: "trim-horizon"
-    verify: 0
+    verify: "0"
 
 
 submission_agent:
@@ -97,7 +97,7 @@ submission_filemanager:
 
 submission_metadata:
   path: /submission
-  port: 83
+  port: 84
   image:
     name: "ivanantonov97/urxiv_submission_metadata"
     tag: "0.0.1"
